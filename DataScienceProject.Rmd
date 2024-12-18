@@ -1,0 +1,519 @@
+---
+title: "Analysis and Solution Proposals for the Obesity Issue Using Data Science Methods"
+output: pdf_document
+date: "2024-10-29"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 1-Problem Definition
+
+Obesity has become an increasingly significant health issue today. It is directly linked to cardiovascular diseases, diabetes, and various chronic illnesses, reducing individuals' quality of life and placing a heavy financial burden on healthcare systems. Solving this issue requires evaluating various factors such as physical activity levels, eating habits, genetic factors, and lifestyle. Data science methods provide a powerful tool for analyzing these factors that contribute to obesity and developing effective solutions. Machine learning algorithms and statistical modeling techniques can be used to identify individuals at risk and create personalized health recommendations. These approaches enable the development of more effective and scientifically-based strategies in the fight against obesity.
+
+# 2-Data Collection
+
+A suitable dataset has been found on Kaggle for conducting a data science project related to the topic. You can access the dataset through the following link: kaggle.com/datasets/lesumitkumarroy/obesity-data-set
+
+# 3-Exploratory Data Analysis and Data Visualization
+
+```{r dowland, include=FALSE}
+# Download libraries
+required_packages <- c(
+  "ggplot2",       # Veri görselleştirme
+  "dplyr",         # Veri manipülasyonu
+  "tidyr",         # Veri düzenleme
+  "readr",         # Veri okuma
+  "lubridate",     # Tarih ve zaman işlemleri
+  "corrplot",      # Korelasyon matrisinin görselleştirilmesi
+  "knitr",         # R Markdown için
+  "rmarkdown"      # R Markdown raporları oluşturma
+)
+new_packages <- required_packages[!(required_packages %in% installed.packages()[, "Package"])]
+if (length(new_packages)) {
+  install.packages(new_packages)
+}
+lapply(required_packages, library, character.only = TRUE)
+
+install.packages("reshape2")
+install.packages("readr")
+
+library(ggplot2)
+library(reshape2)
+library(readr)
+```
+
+```{r a}
+# Load data from a CSV file
+data <- read_csv("/cloud/project/ObesityDataSet_raw_and_data_sinthetic.csv")
+# View the first few rows of the dataset
+head(data)
+```
+
+```{r 5}
+# Check the number of rows and columns
+str(data)
+```
+
+
+## Filling missing values with the mean
+
+```{r 6}
+# Veri setinde herhangi bir NA değeri olup olmadığını kontrol etme
+any(is.na(data))
+
+```
+### Boxplot for Age variable
+
+```{r 7}
+ggplot(data, aes(y = Age)) +
+  geom_boxplot(fill = "blue") +
+  ggtitle("Boxplot of Age")
+```
+
+### Boxplot for Height variable
+
+```{r 8}
+ggplot(data, aes(y = Height)) +
+  geom_boxplot(fill = "green") +
+  ggtitle("Boxplot of Height")
+```
+
+### Boxplot for Weight variable
+
+```{r 9}
+ggplot(data, aes(y = Weight)) +
+  geom_boxplot(fill = "purple") +
+  ggtitle("Boxplot of Weight")
+```
+
+### Boxplot for FCVC (Frequency of Consumption of Vegetables)
+
+```{r 10}
+ggplot(data, aes(y = FCVC)) +
+  geom_boxplot(fill = "pink") +
+  ggtitle("Boxplot of Frequency of Consumption of Vegetables (FCVC)")
+```
+
+### Boxplot for NCP (Number of Main Meals)
+
+```{r 11}
+ggplot(data, aes(y = NCP)) +
+  geom_boxplot(fill = "brown") +
+  ggtitle("Boxplot of Number of Main Meals (NCP)")
+```
+
+### Boxplot for CH2O (Daily Water Intake)
+
+```{r 12}
+ggplot(data, aes(y = CH2O)) +
+  geom_boxplot(fill = "skyblue") +
+  ggtitle("Boxplot of Daily Water Intake (CH2O)")
+```
+
+### Boxplot for FAF (Physical Activity Frequency)
+
+```{r 13}
+ggplot(data, aes(y = FAF)) +
+  geom_boxplot(fill = "violet") +
+  ggtitle("Boxplot of Physical Activity Frequency (FAF)")
+```
+
+### Boxplot for TUE (Time Using Technology Devices)
+
+```{r 14}
+ggplot(data, aes(y = TUE)) +
+  geom_boxplot(fill = "coral") +
+  ggtitle("Boxplot of Time Using Technology Devices (TUE)")
+```
+
+## Plotting a histogram for a numerical column
+
+## Load the necessary library
+
+```{r 16}
+library(ggplot2)
+```
+
+### Histogram for Age variable
+
+```{r 17}
+ggplot(data, aes(x = Age)) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black") +
+  ggtitle("Age Distribution")
+```
+
+### Histogram for Height variable
+
+```{r 18}
+ggplot(data, aes(x = Height)) +
+  geom_histogram(binwidth = 0.05, fill = "green", color = "black") +
+  ggtitle("Height Distribution")
+```
+
+### Histogram for Weight variable
+
+```{r 19}
+ggplot(data, aes(x = Weight)) +
+  geom_histogram(binwidth = 1, fill = "purple", color = "black") +
+  ggtitle("Weight Distribution")
+```
+
+### Bar chart for Gender variable
+
+```{r 20}
+ggplot(data, aes(x = Gender)) +
+  geom_bar(fill = "orange") +
+  ggtitle("Gender Distribution")
+```
+
+### Bar chart for family_history_with_overweight variable
+
+```{r 21}
+ggplot(data, aes(x = family_history_with_overweight)) +
+  geom_bar(fill = "cyan") +
+  ggtitle("Family History of Overweight")
+```
+
+### Bar chart for FAVC (Frequent Consumption of High Caloric Food)
+
+```{r 22}
+ggplot(data, aes(x = FAVC)) +
+  geom_bar(fill = "yellow") +
+  ggtitle("Frequent Consumption of High Caloric Food (FAVC)")
+```
+
+### Histogram for FCVC (Frequency of Consumption of Vegetables)
+
+```{r 23}
+ggplot(data, aes(x = FCVC)) +
+  geom_histogram(binwidth = 0.5, fill = "pink", color = "black") +
+  ggtitle("Frequency of Consumption of Vegetables (FCVC)")
+```
+
+### Histogram for NCP (Number of Main Meals)
+
+```{r 24}
+ggplot(data, aes(x = NCP)) +
+  geom_histogram(binwidth = 1, fill = "brown", color = "black") +
+  ggtitle("Number of Main Meals (NCP)")
+```
+
+### Bar chart for CAEC (Consumption of Food Between Meals)
+
+```{r 25}
+ggplot(data, aes(x = CAEC)) +
+  geom_bar(fill = "purple") +
+  ggtitle("Consumption of Food Between Meals (CAEC)")
+```
+
+### Bar chart for SMOKE variable
+
+```{r 26}
+ggplot(data, aes(x = SMOKE)) +
+  geom_bar(fill = "grey") +
+  ggtitle("Smoking Habit (SMOKE)")
+```
+
+### Histogram for CH2O (Daily Water Intake)
+
+```{r 27}
+ggplot(data, aes(x = CH2O)) +
+  geom_histogram(binwidth = 0.1, fill = "skyblue", color = "black") +
+  ggtitle("Daily Water Intake (CH2O)")
+```
+
+### Bar chart for SCC (Calories Consumption Monitoring)
+
+```{r 28}
+ggplot(data, aes(x = SCC)) +
+  geom_bar(fill = "red") +
+  ggtitle("Calories Consumption Monitoring (SCC)")
+```
+
+### Histogram for FAF (Physical Activity Frequency)
+
+```{r 29}
+ggplot(data, aes(x = FAF)) +
+  geom_histogram(binwidth = 1, fill = "violet", color = "black") +
+  ggtitle("Physical Activity Frequency (FAF)")
+```
+
+### Histogram for TUE (Time Using Technology Devices)
+
+```{r 30}
+ggplot(data, aes(x = TUE)) +
+  geom_histogram(binwidth = 0.5, fill = "coral", color = "black") +
+  ggtitle("Time Using Technology Devices (TUE)")
+```
+
+### Bar chart for CALC (Alcohol Consumption Frequency)
+
+```{r 31}
+ggplot(data, aes(x = CALC)) +
+  geom_bar(fill = "orange") +
+  ggtitle("Alcohol Consumption Frequency (CALC)")
+```
+
+### Bar chart for MTRANS (Transportation Used)
+
+```{r 32}
+ggplot(data, aes(x = MTRANS)) +
+  geom_bar(fill = "pink") +
+  ggtitle("Transportation Mode (MTRANS)")
+```
+
+```{r 33}
+# Correlation matrix (Korelasyon matrisi)
+cor_matrix <- cor(data[, sapply(data, is.numeric)], use = "complete.obs")
+print(cor_matrix)
+```
+
+```{r 34}
+# Heatmap (simple heatmap using ggplot)
+library(reshape2)
+cor_melted <- melt(cor_matrix)
+ggplot(data = cor_melted, aes(x = Var1, y = Var2, fill = value)) +
+  geom_tile() +
+  scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
+                       midpoint = 0, limit = c(-1, 1)) +
+  ggtitle("Correlation Heatmap")
+
+
+```
+
+As a result of examining and visualizing the data, the variables that are 
+considered to directly affect obesity and are relatively easier to address 
+with solutions have been identified as follows;
+
+-   FCVC (Frequency of Vegetable Consumption): Increase vegetable consumption.
+
+-   FAVC (Consumption of High-Calorie Food): Reduce the consumption of 
+high-calorie foods.
+
+-   FAF (Physical Activity Time): Increase physical activity.
+
+-   CH2O (Water Consumption): Increase daily water consumption.
+
+-   TUE (Technology Usage Time): Reduce technology usage time to create more 
+time for physical activity.
+
+-   In this context, we can begin exploring the obesity situation by focusing 
+on the positive changes in these variables.
+
+# 4- Model
+
+Obesity status (NObeyesdad) is typically determined using a metric like Body 
+Mass Index (BMI). BMI is a parameter that helps estimate a person's body fat
+percentage based on their height and weight. The following steps demonstrate 
+how to calculate BMI and use this metric for determining obesity status:
+
+BMI Calculation; BMI is calculated using the following formula:
+
+BMI=Weight (kg)/Height (m)2
+
+Where;
+
+Weight is in kilograms (kg), Height is in meters (m). 
+2. BMI Categories: Based on the BMI result, an individual's obesity status is
+typically classified into the following categories:
+
+Normal weight: 18.5 - 24.9 Overweight: 25 - 29.9 Obese: 30 and above
+Underweight: Below 18.5
+
+
+```{r 36}
+category_map <- list()
+
+# Convert categorical variables to numeric and store the mappings
+data[] <- lapply(data, function(x) {
+  if (is.character(x)) {
+    # Convert to factor and store mappings
+    factor_x <- factor(x)
+    
+    # Save the mappings (column name and numeric value for each level)
+    category_map[[deparse(substitute(x))]] <- setNames(seq_along
+                                                       (levels(factor_x)), 
+                                                       levels(factor_x))
+    
+    # Convert to numeric
+    return(as.numeric(factor_x))  
+  } else {
+    return(x)  # No change for numeric data
+  }
+})
+```
+
+
+
+```{r 37}
+data$BMI <- data$Weight / (data$Height^2)  # BMI hesaplama
+
+# Select overweight and obese individuals (BMI >= 25)
+overweight_obese_data <- data[data$BMI >= 27.45, ]
+
+# Display the number of overweight or obese individuals
+cat("Number of overweight or obese individuals: ",
+    nrow(overweight_obese_data), "\n")
+```
+
+```{r 40}
+# Standardization
+overweight_obese_data_scaled <- overweight_obese_data
+overweight_obese_data_scaled[, c("FCVC", "FAVC", "FAF", "CH2O", "TUE")] <- 
+  scale(overweight_obese_data[, c("FCVC", "FAVC", "FAF", "CH2O", "TUE")])
+
+# Recreate model using the standardized data
+model_scaled <- lm(Weight ~ FCVC + FAVC + FAF + CH2O + TUE,
+                   data = overweight_obese_data_scaled)
+
+# Predict weight changes for each observation in the dataset
+predicted_weight_changes_scaled <- predict(model_scaled, 
+                                           newdata = overweight_obese_data_scaled)
+
+# Handle NA values if present
+predicted_weight_changes_scaled[is.na(predicted_weight_changes_scaled)] <- 0
+
+# Limit the weight change predictions between -10 and 10
+predicted_weight_changes_scaled <- 
+  pmin(pmax(predicted_weight_changes_scaled, -10), 10)
+
+# Calculate the adjusted weights by applying the predicted weight changes
+overweight_obese_data$Adjusted_Weight <- 
+  overweight_obese_data$Weight - predicted_weight_changes_scaled
+
+# New data for prediction based on mean values with specific adjustments
+new_data <- data.frame(
+  FCVC = mean(overweight_obese_data$FCVC, na.rm = TRUE) * 1.02,  
+  FAVC = mean(overweight_obese_data$FAVC, na.rm = TRUE) * 0.98,  
+  FAF = mean(overweight_obese_data$FAF, na.rm = TRUE) * 1.05,    
+  CH2O = mean(overweight_obese_data$CH2O, na.rm = TRUE) * 1.02,  
+  TUE = mean(overweight_obese_data$TUE, na.rm = TRUE) * 0.95     
+)
+
+# Predict the weight changes using the new data
+predicted_new_weight_change <- predict(model_scaled, newdata = new_data)
+
+# Calculate the new predicted weight by applying the weight change
+new_predicted_weight <- 
+  mean(overweight_obese_data$Weight, na.rm = TRUE) - predicted_new_weight_change
+
+# Display the first few rows of the original and adjusted weight
+head(overweight_obese_data[, c("Weight", "Adjusted_Weight")])
+```
+
+```{r 41}
+# Add the Weight_Difference column
+overweight_obese_data$Weight_Difference <- 
+  overweight_obese_data$Weight - overweight_obese_data$Adjusted_Weight
+
+# Create the plot
+ggplot(overweight_obese_data, aes(x = Weight, y = Adjusted_Weight)) +
+  geom_point(aes(color = Weight_Difference), size = 3, alpha = 0.7) +  
+  # Color the points based on the difference
+  scale_color_gradient2(low = "red", mid = "yellow", 
+                        high = "green", midpoint = 0) +  
+  # Show the difference using color
+  geom_abline(slope = 1, intercept = 0, color = "black", 
+              linetype = "dashed", linewidth = 1) +  # Add the Y = X line
+  labs(
+    title = "Original vs Adjusted Weights", 
+    subtitle = "Visualizing the Difference Between Original and Adjusted Weights",
+    x = "Original Weight (kg)", 
+    y = "Adjusted Weight (kg)",
+    caption = "Red points: Weight loss, Green points: Weight gain"
+  ) +
+  theme_minimal() +  # Use minimal theme
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),  
+    # Adjust the title style
+    plot.subtitle = element_text(hjust = 0.5, size = 12),  
+    # Adjust the subtitle style
+    axis.title = element_text(size = 12, face = "bold"),  
+    # Make axis titles bold
+    axis.text = element_text(size = 10),  
+    # Adjust the axis text size
+    plot.caption = element_text(size = 9, hjust = 1)  
+    # Adjust the caption text size
+  ) +
+  theme(legend.position = "bottom")  # Place the legend at the bottom
+
+
+```
+
+# 5-Model Testing
+
+
+
+```{r 42}
+# Splitting the data into Training and Testing Sets
+set.seed(123)  # For reproducibility of results
+library(caret)
+train_index <- createDataPartition(overweight_obese_data$Weight, 
+                                   p = 0.8, list = FALSE)
+train_data <- overweight_obese_data[train_index, ]
+test_data <- overweight_obese_data[-train_index, ]
+
+# Creating model using the training data
+model_train <- lm(Weight ~ FCVC + FAVC + FAF + CH2O + TUE, data = train_data)
+
+# Summary of the model trained on the training data
+summary(model_train)
+
+# Making predictions using the test data
+predicted_weights <- predict(model_train, newdata = test_data)
+
+# Calculating the difference between actual and predicted weights
+comparison <- data.frame(
+  Actual = test_data$Weight,
+  Predicted = predicted_weights,
+  Difference = test_data$Weight - predicted_weights
+)
+
+# Displaying the first few rows
+head(comparison)
+
+# Calculating performance metrics
+RMSE_value <- sqrt(mean((predicted_weights - test_data$Weight)^2))  
+# Root Mean Squared Error (RMSE)
+MAE_value <- mean(abs(predicted_weights - test_data$Weight))        
+# Mean Absolute Error (MAE)
+R_squared_value <- 1 - sum((test_data$Weight - predicted_weights)^2) /
+  sum((test_data$Weight - mean(test_data$Weight))^2)  # R-squared
+
+# Printing the results
+cat("RMSE:", RMSE_value, "\n")
+cat("MAE:", MAE_value, "\n")
+cat("R-squared:", R_squared_value, "\n")
+
+# Correlation Analysis (between actual and predicted values)
+correlation <- cor(test_data$Weight, predicted_weights)
+cat("Correlation between actual and predicted weights:", correlation, "\n")
+
+```
+The R² and coefficient values of the regression model developed as a result of the study were examined. Upon review, it was observed that the R² value was low. During the model development process, various other variables were tested to build the most successful model; however, the performance of these alternative models was also found to be low. Therefore, the selected variables for the model were prioritized based on their practical adjustability in real life and their direct influence on an individual's weight. In this context, the focus of the model shifted from its ability to explain the weight variable to exploring the potential impacts of lifestyle changes on weight.
+
+
+
+# 6-Results
+
+The five variables used in the model were chosen because they are factors that can be directly influenced in daily life. It has been determined that improving these factors can lead to better living standards and healthier outcomes. These selected variables are expected to support individuals in achieving a healthy weight. However, it should not be overlooked that other variables, beyond those included in this model, also play a significant role in healthy weight management. Therefore, alternative models can be developed using different variables, and positive changes in these variables can also contribute to individuals reaching their healthy weight goals.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
