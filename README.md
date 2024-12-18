@@ -1,0 +1,5 @@
+As a senior student in the Department of Statistics, I was assigned a task in the "Introduction to Data Science" course to identify a real-world problem, address it using data science approaches, and meticulously analyze and observe all stages of the process. This project not only enhanced my technical knowledge and skills but also significantly strengthened my ability to think critically and data-driven.  
+
+During the project, I had the opportunity to engage with essential data science steps, such as problem identification, data collection, cleaning, modeling, and analysis, gaining firsthand experience of the importance of each phase. The challenges I encountered along the way taught me that data science projects require not only technical expertise but also patience, attention to detail, and critical thinking.  
+
+The outcomes of the project and the experiences I gained have proven invaluable, demonstrating how data science can provide practical solutions to real-world problems. I am pleased to share my work and the reports I have prepared with you as a result of this process.
